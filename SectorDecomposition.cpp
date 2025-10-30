@@ -2,7 +2,7 @@
  * SectorDecomposition.cpp
  *
  *  Created on: 25. 8. 2023
- *      Author: matej
+ *      Author: M. Kecer
  */
 
 #include "SectorDecomposition.hpp"
@@ -264,8 +264,7 @@ PrimarySector::PrimarySector(FeynmanParam &_feyn,
 
 	// parts that will make up final resulting expression after
 	// performing all the steps
-	this->overallNumFactor_bar = findOverallNumFactor_bar(this->parentFeyn);//
-	//.subs(this->d==6-2*this->eps);
+	this->overallNumFactor_bar = findOverallNumFactor_bar(this->parentFeyn);
 	this->overallFactor2_bar = findOverallFactor2_bar(this->parentFeyn);
 	this->numeratorFactor_bar = findNumeratorFactor_bar(this->parentFeyn,
 			this->paramIntegratedOut, *this);
@@ -277,18 +276,13 @@ PrimarySector::PrimarySector(FeynmanParam &_feyn,
 }
 
 // getters
-//FeynmanParam PrimarySector::getParenFeyn() const {
-//	return this->parentFeyn;
-//}
+
 GiNaC::symbol PrimarySector::getParamIntegratedOut() const {
 	return this->paramIntegratedOut;
 }
 
 // setters
-//void PrimarySector::setParenFeyn(FeynmanParam _parentFeyn) {
-//	this->parentFeyn = _parentFeyn;
-//	return;
-//}
+
 void PrimarySector::setParamIntegratedOut(GiNaC::symbol _param) {
 	this->paramIntegratedOut = _param;
 	return;
@@ -1062,9 +1056,6 @@ void SubSector::factor_tl_ifPossible(SubSector &_sector, GiNaC::symbol _tl) {
 		powerOf_tl = findPowerOf_tl_inExpression(U_bar, _tl);
 		fullPower = powerOf_tl * (alpha - (l * d) / 2 - d / 2);
 
-		//newNumeratorFactor *= GiNaC::pow(_tl, fullPower);
-		//_sector.setNumeratorFactor_bar(newNumeratorFactor);
-
 		// update U_bar
 		_sector.setU_bar((U_bar / (GiNaC::pow(_tl, powerOf_tl))).normal());
 	}
@@ -1081,9 +1072,6 @@ void SubSector::factor_tl_ifPossible(SubSector &_sector, GiNaC::symbol _tl) {
 		// update F_bar
 		_sector.setF_bar((F_bar / (GiNaC::pow(_tl, powerOf_tl))).normal());
 	}
-
-	// finally - simplify the new numeratorFactor
-	// _sector.setNumeratorFactor_bar(_sector.getNumeratorFactor_bar().normal());
 
 	return;
 
@@ -1318,8 +1306,6 @@ std::vector<std::vector<GiNaC::symbol>> findAllCombinationsOfParams(
 // Basically creates power set of set _params that is given as argument.
 // This power set is returned in the form of vector.
 
-// NOTE: I found this on the internet, its quite clever
-
 	std::vector<std::vector<GiNaC::symbol>> result = { { } };
 	for (int i = 0; i < _params.size(); i++) {
 		std::vector<std::vector<GiNaC::symbol>> copy = result;
@@ -1543,8 +1529,6 @@ void testFullyDecomposeSector(int _num, std::vector<int> &_result) {
 		testFullyDecomposeSector(_num, _result);
 	}
 
-// TODO test properly
-
 	return;
 }
 
@@ -1575,11 +1559,6 @@ void substituteInEpsilon(Sector &_sect) {
 	GiNaC::ex F = _sect.getF_bar();
 
 	// actually in overallNumFactor there should be no epsilons from construction
-	// this does not hold for part propto ext momentum - type2 and type3
-	//if (overallNumFactor.has(eps)) {
-	//	std::cout << "Something wrong. Your overallNumFactor has epsilon in it."
-	//			<< std::endl;
-	//}
 
 	overallNumFactor = overallNumFactor.subs(d == 6 - 2 * eps);
 	_sect.setOverallNumFactor_bar(overallNumFactor);
@@ -1763,7 +1742,7 @@ std::vector<GiNaC::ex> findPoleCoefficients(FinalIntegral _finInt) {
 	//
 	// NOTE: the function should be performed after extractPoles()
 	//
-	// NOTE: (TODO) so far it does not expand overallFactor (involving gamma function)
+	// NOTE: so far it does not expand overallFactor (involving gamma function)
 	// that is why constant term is also in return vector - it is actually eps^-1 pole
 	// if gamma function was also expanded
 	//
@@ -1777,7 +1756,7 @@ std::vector<GiNaC::ex> findPoleCoefficients(FinalIntegral _finInt) {
 	GiNaC::ex I = _finInt.getI();
 	GiNaC::ex currentCoefficient;
 
-	// NOTE: (TODO) -1 because i am not expanding gamma function in overallFactor
+	// NOTE: -1 because i am not expanding gamma function in overallFactor
 	GiNaC::ex orderOfHighestPole = _finInt.getOrderOfHighestPole() - 1;
 
 	// expand in eps
@@ -1794,14 +1773,6 @@ std::vector<GiNaC::ex> findPoleCoefficients(FinalIntegral _finInt) {
 	// (A_{-2} + A_{-1} eps^{+1} + A_{0} eps^{+2}), if we want A_{-2}
 	// diff. 0 times, divide by 0! and set eps->0, if we want A_{-1}
 	// then diff. 1 times, divide by 1! and set eps-> 0
-
-	//expandedIntegral.coeff(eps,-2);
-	//std::cout<<"poly coeff -2" << std::endl;
-	//expandedIntegral.coeff(eps,-1);
-	//std::cout<<"poly coeff -1" << std::endl;
-	//expandedIntegral.coeff(eps,0);
-	//std::cout<<"poly coeff 0" << std::endl;
-	//expandedIntegral *= GiNaC::pow(eps, orderOfHighestPole);
 
 	int counter = 0;
 	GiNaC::ex ginacCount = 0;
@@ -1827,7 +1798,7 @@ std::vector<GiNaC::ex> findFinitePartCoefficients(FinalIntegral _finInt,
 	//
 	// NOTE: the function should be performed after extractPoles()
 	//
-	// NOTE: (TODO) so far it does not expand overallFactor (involving gamma function)
+	// NOTE: so far it does not expand overallFactor (involving gamma function)
 	// that is why constant term is also in return vector - it is actually eps^-1 pole
 	// if gamma function was also expanded
 	//
@@ -1992,10 +1963,6 @@ std::vector<GiNaC::ex> listCoefsOfDivergentPartPropToExtFreq(Diagram _diag) {
 			// convert final set of sectors into objects FinalIntegral
 			finalInts = generateSetOfFinalIntegrals(sectors);
 
-			// TODO - do it better
-			//overallFactor2 = finalInts.at(0).getOverallFactor2();
-			//std::cout<<overallFactor2<<std::endl;
-
 			// for every final integral
 			for (int k = 0; k < finalInts.size(); k++) {
 				//std::cout<<"working on final int " << k << "out of "<< finalInts.size() << std::endl;
@@ -2050,11 +2017,6 @@ void findDivergentPartsPropToExtFreq_3loop(Diagram _diag, std::string _path) {
 	// can be only done with IPMomRouting and nonzero ext. momenta
 	std::vector<Diagram> freqPart;
 	freqPart = addVertCorrespToFrequencyDeriv(diag);
-
-	//just a check
-	//for(int i = 0; i< freqPart.size(); i++){
-	//freqPart.at(i).print();
-	//}
 
 	std::vector<std::vector<Vertex>> orderings;
 
@@ -2118,23 +2080,9 @@ void findDivergentPartsPropToExtFreq_3loop(Diagram _diag, std::string _path) {
 
 	}
 
-	//  together wls
-	//writeWLSCombinedVegasAndEx_separately(diag, integVariables, result,
-	//			finalInts.at(0).getOverallFactor2(), _path);
-
-	// Nparts wls
-	//writeWLSCombinedExVegas_Nparts(diag, integVariables, result, finalInts.at(0).getOverallFactor2(), _path);
-
-	// together c vegas
-	//writeCVegas_eps0(diag, integVariables, result,
-	//		finalInts.at(0).getOverallFactor2(), _path);
-
-	// ostrý
 	//-----------------
 	writeCombinedCVegasAndEx_3loop(diag, integVariables, result,
 			finalInts.at(0).getOverallFactor2(), _path);
-	//writeCVegas_Eps0_Nparts(diag, integVariables, result,
-	//		finalInts.at(0).getOverallFactor2(), _path, 5);
 	//-----------------
 	return;
 }
@@ -2176,9 +2124,6 @@ void findDivergentPartsPropToTau_3loop(Diagram _diag, std::string _path) {
 	std::cout << "Num. of tau part diagrams: " << tauParts.size() << std::endl;
 	// for all tau parts
 	for (int i = 0; i < tauParts.size(); i++) {
-
-		// just for a check
-		//tauParts.at(i).print();
 
 		// find all possible time orderings
 		orderings = tauParts.at(i).findAllPossibleTimeOrderings("n");
@@ -2235,24 +2180,9 @@ void findDivergentPartsPropToTau_3loop(Diagram _diag, std::string _path) {
 
 	}
 
-	//  together wls
-	//writeWLSCombinedVegasAndEx_separately(diag, integVariables, result,
-	//			finalInts.at(0).getOverallFactor2(), _path);
-
-	// Nparts wls
-	//writeWLSCombinedExVegas_Nparts(diag, integVariables, result, finalInts.at(0).getOverallFactor2(), _path);
-
-	// together c vegas
-	//writeCVegas_eps0(diag, integVariables, result,
-	//		finalInts.at(0).getOverallFactor2(), _path);
-
-	// ostrý
 	//-----------------
-	//writeWLSVegas(diag, integVariables, result, finalInts.at(0).getOverallFactor2(), _path);
 	writeCombinedCVegasAndEx_3loop(diag, integVariables, result,
 			finalInts.at(0).getOverallFactor2(), _path);
-	//writeCVegas_Eps0_Nparts(diag, integVariables, result,
-	//		finalInts.at(0).getOverallFactor2(), _path, 5);
 	//-----------------
 	return;
 }
@@ -2360,23 +2290,10 @@ void findFinitePartsPropToExtFreq(Diagram _diag, std::string _path,
 
 	}
 
-	//  together wls
-	//writeWLSCombinedVegasAndEx_separately(diag, integVariables, result,
-	//			finalInts.at(0).getOverallFactor2(), _path);
 
-	// Nparts wls
-	//writeWLSCombinedExVegas_Nparts(diag, integVariables, result, finalInts.at(0).getOverallFactor2(), _path);
-
-	// together c vegas
-	//writeCVegas_eps0(diag, integVariables, result,
-	//		finalInts.at(0).getOverallFactor2(), _path);
-
-	// ostrý
 	//-----------------
 	writeCVegas_Finite_2loop(diag, integVariables, result,
 			finalInts.at(0).getOverallFactor2(), _path, _orderOfEpsilon);
-	//writeCVegas_Eps0_Nparts(diag, integVariables, result,
-	//		finalInts.at(0).getOverallFactor2(), _path, 5);
 	//-----------------
 	return;
 }
@@ -2407,10 +2324,6 @@ void findFinitePartsPropToTau(Diagram _diag, std::string _path,
 	std::vector<Diagram> tauParts;
 	tauParts = addVertCorrespToTauDeriv(diag);
 
-	//just a check
-	//for(int i = 0; i< freqPart.size(); i++){
-	//freqPart.at(i).print();
-	//}
 
 	std::vector<std::vector<Vertex>> orderings;
 
@@ -2475,23 +2388,9 @@ void findFinitePartsPropToTau(Diagram _diag, std::string _path,
 
 	}
 
-	//  together wls
-	//writeWLSCombinedVegasAndEx_separately(diag, integVariables, result,
-	//			finalInts.at(0).getOverallFactor2(), _path);
-
-	// Nparts wls
-	//writeWLSCombinedExVegas_Nparts(diag, integVariables, result, finalInts.at(0).getOverallFactor2(), _path);
-
-	// together c vegas
-	//writeCVegas_eps0(diag, integVariables, result,
-	//		finalInts.at(0).getOverallFactor2(), _path);
-
-	// ostrý
 	//-----------------
 	writeCVegas_Finite_2loop(diag, integVariables, result,
 			finalInts.at(0).getOverallFactor2(), _path, _orderOfEpsilon);
-	//writeCVegas_Eps0_Nparts(diag, integVariables, result,
-	//		finalInts.at(0).getOverallFactor2(), _path, 5);
 	//-----------------
 	return;
 }
@@ -2580,24 +2479,9 @@ void findDivergentParts_3pt_2loop(Diagram _diag, std::string _path) {
 
 	}
 
-	//  together wls
-	//writeWLSCombinedVegasAndEx_separately(diag, integVariables, result,
-	//			finalInts.at(0).getOverallFactor2(), _path);
-
-	// Nparts wls
-	//writeWLSCombinedExVegas_Nparts(diag, integVariables, result, finalInts.at(0).getOverallFactor2(), _path);
-
-	// together c vegas
-	//writeCVegas_eps0(diag, integVariables, result,
-	//		finalInts.at(0).getOverallFactor2(), _path);
-
-	// ostrý
 	//-----------------
-	//writeWLSVegas(diag, integVariables, result, finalInts.at(0).getOverallFactor2(), _path);
 	writeCombinedCVegasAndEx_2loop(diag, integVariables, result,
 			finalInts.at(0).getOverallFactor2(), _path);
-	//writeCVegas_Eps0_Nparts(diag, integVariables, result,
-	//		finalInts.at(0).getOverallFactor2(), _path, 5);
 	//-----------------
 	return;
 }
@@ -2686,24 +2570,10 @@ void findDivergentParts_3pt_3loop(Diagram _diag, std::string _path) {
 
 	}
 
-	//  together wls
-	//writeWLSCombinedVegasAndEx_separately(diag, integVariables, result,
-	//			finalInts.at(0).getOverallFactor2(), _path);
 
-	// Nparts wls
-	//writeWLSCombinedExVegas_Nparts(diag, integVariables, result, finalInts.at(0).getOverallFactor2(), _path);
-
-	// together c vegas
-	//writeCVegas_eps0(diag, integVariables, result,
-	//		finalInts.at(0).getOverallFactor2(), _path);
-
-	// ostrý
 	//-----------------
-	//writeWLSVegas(diag, integVariables, result, finalInts.at(0).getOverallFactor2(), _path);
 	writeCombinedCVegasAndEx_3loop(diag, integVariables, result,
 			finalInts.at(0).getOverallFactor2(), _path);
-	//writeCVegas_Eps0_Nparts(diag, integVariables, result,
-	//		finalInts.at(0).getOverallFactor2(), _path, 5);
 	//-----------------
 	return;
 }
@@ -3207,15 +3077,11 @@ void fixGamma_proptoExtMom_3loop(FinalIntegral &_fin) {
 void factorD0IntoOverallFactor2_proptoExtMom(FinalIntegral &_fin) {
 // there is some factor of D_0 in overallNumFactor or I, we want to get it into
 // overallFactor2
-//std::cout<<_fin.getI()<<std::endl;
-//std::cout<<_fin.getI().subs(D0==0)<<std::endl;
 	GiNaC::ex numFactor = _fin.getOverallNumFactor();
 	numFactor.expand(); // ginac function used when working with polynomials
 	int degree = numFactor.degree(_fin.getD0());
-//std::cout<<degree<<std::endl;
 	_fin.setOverallNumFactor(
 			_fin.getOverallNumFactor().subs(_fin.getD0() == 1));
-//_fin.setI(_fin.getI().subs(_fin.getD0()==1));
 	_fin.setOverallFactor2(
 			_fin.getOverallFactor2() * GiNaC::pow(_fin.getD0(), degree));
 	return;

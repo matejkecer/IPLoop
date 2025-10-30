@@ -2,7 +2,7 @@
  * TimeOrderingsAndTimeCuts.cpp
  *
  *  Created on: Aug 10, 2023
- *      Author: matej
+ *      Author: M. Kecer
  */
 
 #include"TimeOrderingsAndTimeCuts_ginac.hpp"
@@ -21,10 +21,8 @@ void permute(std::vector<Vertex> _vertices, int l, int r,
 	// Auxiliary program used in function "makeAllPermutationsOfVertices"
 
 	if (l == r) {
-		//cout << vertices << endl;
 		if (isAllowedPermutation(_vertices, _propagators)) {
 			_permutations.push_back(_vertices);
-			//std::cout<<_permutations.size()<<std::endl;
 		}
 	} else {
 		// Permutations made
@@ -110,8 +108,6 @@ int findPositionOfVertexInOrdering(std::vector<Vertex> _permutation,
 void throwOutForbiddenPermutations(
 		std::vector<std::vector<Vertex>> &_allPermutations,
 		std::vector<Propagator> _propagators) {
-	// TODO test!!!!!
-
 	// function checks all the permutations of vertices and gradually removes those,
 	// which don't respect causality of propagators in _propagators
 	// At the end, only allowed orderings remain in container allowedOrderings -> which is
@@ -151,7 +147,7 @@ void throwOutForbiddenPermutations(
 			// i.e. propagators type {A,A,momentum}
 			if (indexOfLaterInOrdering < indexOfSoonerInOrdering) {
 				aux.push_back(currentOrdering);
-				//continue; // TODO - check it but i think it is just useless to put it here, it does nothing
+				//continue;
 			}
 
 		}
@@ -182,12 +178,6 @@ std::vector<std::vector<Vertex>> Diagram::findAllPossibleTimeOrderings(
 	// find all possible permutations
 	allOrderings = makeAllAllowedPermutationsOfVertices(this->vertices, this->intPropags);
 
-	// throws out all the time orderings that are not allowed
-	//throwOutForbiddenPermutations(allOrderings, this->intPropags);
-
-	// prints the number of allowed time orderings for the input diagram
-	//std::cout << allOrderings.size() << std::endl;
-
 	if (_writeData.compare("y") == 0) {
 		writeTimeOrderings(*this, allOrderings);
 	} else {
@@ -211,12 +201,10 @@ void writeTimeOrderings(Diagram _diag,
 
 	std::stringstream s;
 
-	//s << "/home/matej/eclipse-workspace/IPLoop/src/" << "Diagram_" << _diag.getName() <<".txt";
 	s << "Diagram_" << _diag.getName() << ".txt";
 
 	std::fstream writer;
 
-	//TODO - try catch
 	writer.open(s.str(), std::fstream::app);
 
 	writer << "Diagram: " << _diag.getName() << "\n";
@@ -374,7 +362,6 @@ std::string exToString(GiNaC::ex _ex) {
 }
 
 int countTaus(std::vector<std::vector<Propagator>> _allCuts, int _cut) {
-	// TODO - try to find out if comparing expressions wouldnt work -> don't use exToString
 	// Auxiliary function to be used in wolframFormatIntegrand
 	// is needed because if I simply put numOfMomenta in cut* tau I would have problem,
 	// because it would count also momentum 0
@@ -574,12 +561,10 @@ void writeIntegrandAfterTimeCuts(Diagram _diag, GiNaC::ex _integrand) {
 
 	std::stringstream s;
 
-	//s << "/home/matej/eclipse-workspace/IPLoop/src/" << "Diagram_" << _diag.getName() <<".txt";
 	s << "Diagram_" << _diag.getName() << ".txt";
 
 	std::fstream writer;
 
-	//TODO - try catch
 	writer.open(s.str(), std::fstream::app);
 
 	writer << "Integrand: " << "\n";

@@ -2,7 +2,7 @@
  * OutputWriter.hpp
  *
  *  Created on: Sep 2, 2023
- *      Author: matej
+ *      Author: M. Kecer
  */
 
 #ifndef OUTPUTWRITER_HPP_
@@ -11,7 +11,6 @@
 #include "ElementsAndInput_ginac.hpp"
 #include "TimeOrderingsAndTimeCuts_ginac.hpp"
 #include "FeynmanAndAlphaParam.hpp"
-#include "SectorDecomposition.hpp"
 
 //===========================================================================
 // code related to rewriting ginac expressions into wolfram mathematica syntax
@@ -49,6 +48,12 @@ void writeWLSForExactHighestPoleCoef(Diagram _diag,
 		std::vector<GiNaC::symbol> _integVars,
 		std::vector<GiNaC::ex> _poleCoefs, GiNaC::ex _overallFactor,
 		std::string _path);
+
+void writeWLSForExactHighestPoleCoef_2loop(Diagram _diag,
+		std::vector<GiNaC::symbol> _integVars,
+		std::vector<GiNaC::ex> _poleCoefs, GiNaC::ex _overallFactor,
+		std::string _path);
+
 
 //===========================================================================
 

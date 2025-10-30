@@ -2,7 +2,7 @@
  * OutputWriter.cpp
  *
  *  Created on: Sep 2, 2023
- *      Author: matej
+ *      Author: M. Kecer
  */
 
 #include <sstream>
@@ -537,6 +537,49 @@ void writeWLSForExactHighestPoleCoef(Diagram _diag,
 
 	writer << "op = OpenWrite[\"" << _path << "Diagram_" << _diag.getName()
 			<< "_eps2.out\"]" << '\n';
+	writer << "Write[op, overallFactor]" << '\n';
+	//writer << "WriteString[op, \"exact coef. of pole eps^(" << currentPowerOfEps << "): \"]"
+	//				<< '\n';
+	writer << "Write[op, coef" << -currentPowerOfEps << "]" << '\n';
+	writer << "Close[op]" << '\n';
+
+	writer.close();
+
+	return;
+}
+
+void writeWLSForExactHighestPoleCoef_2loop(Diagram _diag,
+		std::vector<GiNaC::symbol> _integVars,
+		std::vector<GiNaC::ex> _poleCoefs, GiNaC::ex _overallFactor,
+		std::string _path) {
+
+	std::string overallFactor = rewriteGammaFunctionMathematicaFormat(
+			_overallFactor);
+	std::stringstream s;
+	int currentPowerOfEps;
+
+	s << _path << "Diagram_" << _diag.getName() << "_eps1" << ".wls";
+
+	std::fstream writer;
+	writer.open(s.str(), std::fstream::out);
+	writer << "#!/usr/bin/env wolframscript" << '\n';
+
+	writer << "overallFactor = HoldForm[" << overallFactor << "]" << '\n';
+	currentPowerOfEps = -(_poleCoefs.size() - (0 + 1));
+	writer << "coef" << -currentPowerOfEps << " = " << "Integrate[";
+	writer << rewriteLogsIntoMathematicaFormat(_poleCoefs.at(0)) << ", ";
+
+	for (int j = 0; j < _integVars.size(); j++) {
+		writer << "{" << _integVars.at(j) << ",0,1}";
+		if (j != _integVars.size() - 1) {
+			writer << ", ";
+		}
+	}
+	writer << "] \n";
+	writer << "Print[coef" << -currentPowerOfEps << "]" << "\n";
+
+	writer << "op = OpenWrite[\"" << _path << "Diagram_" << _diag.getName()
+			<< "_eps1.out\"]" << '\n';
 	writer << "Write[op, overallFactor]" << '\n';
 	//writer << "WriteString[op, \"exact coef. of pole eps^(" << currentPowerOfEps << "): \"]"
 	//				<< '\n';
@@ -1599,7 +1642,6 @@ void writeCVegas_Eps0_Nparts(Diagram _diag,
 		writer << "#define f ff[0] \n \n";
 
 		writer << "f = " << poleCoefParts.at(m) << "; \n \n";
-		//writer << "f = 1./4*t0*pow((1+2*t5*t0*pow(t1,2)+6*t4*pow(t2,2)*t0+8*t2*t5*t0*t1+t0*t1+2*t4+8*t4*t2*t0*t1+2*t2+2*t2*t0+6*pow(t2,2)*t5*t0+t0*pow(t1,2)+2*t5*t0*t1+2*t5+4*t4*t2+2*t4*t0*pow(t1,2)+4*t2*t0*t1+2*t5*t1+3*pow(t2,2)*t0+t1+4*t4*t2*t0+2*t4*t1+4*t2*t5*t0+2*t4*t0*t1+4*t2*t5),(-3))" << "; \n \n";
 
 		writer << " return 0; \n"
 				"}\n";
@@ -1762,8 +1804,6 @@ std::vector<std::string> dividePoleCoefIntoNParts_CVegas(std::string _poleCoef,
 
 	std::vector<std::string> result;
 
-	//int numOfParts = countParts(_poleCoef);
-
 	divideTermIntoNParts_CVegas(_poleCoef, _N, result);
 
 	return result;
@@ -1785,9 +1825,8 @@ void writeCombinedCVegasAndEx_3loop(Diagram _diag,
 	writeWLSForExactHighestPoleCoef(_diag, _integVars, _poleCoefs,
 			_overallFactor, _path);
 	writeCVegas_eps1_3loop(_diag, _integVars, _poleCoefs, _overallFactor, _path);
-	//writeCVegas_eps0_3loop(_diag, _integVars, _poleCoefs, _overallFactor, _path);
-	writeCVegas_Eps0_Nparts(_diag, _integVars, _poleCoefs, _overallFactor,
-			_path, 5);
+	writeCVegas_eps0_3loop(_diag, _integVars, _poleCoefs, _overallFactor, _path);
+
 }
 
 void writeCombinedCVegasAndEx_2loop(Diagram _diag,
@@ -1795,7 +1834,7 @@ void writeCombinedCVegasAndEx_2loop(Diagram _diag,
 		std::vector<GiNaC::ex> _poleCoefs, GiNaC::ex _overallFactor,
 		std::string _path) {
 
-	writeWLSForExactHighestPoleCoef(_diag, _integVars, _poleCoefs,
+	writeWLSForExactHighestPoleCoef_2loop(_diag, _integVars, _poleCoefs,
 			_overallFactor, _path);
 	writeCVegas_eps0_2loop(_diag, _integVars, _poleCoefs, _overallFactor, _path);
 }
@@ -1831,8 +1870,6 @@ void writeCVegas_eps1_3loop(Diagram _diag, std::vector<GiNaC::symbol> _integVars
 	currentPowerOfEps = 1;
 	_poleCoefs.at(1).print(GiNaC::print_csrc(aux));
 	poleCoef = aux.str();
-	// write záhlavok
-	// TODO
 
 	std::stringstream s;
 	s << _path << "Diagram_" << _diag.getName() << "_eps1" << ".cpp";
@@ -1878,7 +1915,6 @@ void writeCVegas_eps1_3loop(Diagram _diag, std::vector<GiNaC::symbol> _integVars
 	writer << "#define f ff[0] \n \n";
 
 	writer << "f = " << poleCoef << "; \n \n";
-	//writer << "f = 1./4*t0*pow((1+2*t5*t0*pow(t1,2)+6*t4*pow(t2,2)*t0+8*t2*t5*t0*t1+t0*t1+2*t4+8*t4*t2*t0*t1+2*t2+2*t2*t0+6*pow(t2,2)*t5*t0+t0*pow(t1,2)+2*t5*t0*t1+2*t5+4*t4*t2+2*t4*t0*pow(t1,2)+4*t2*t0*t1+2*t5*t1+3*pow(t2,2)*t0+t1+4*t4*t2*t0+2*t4*t1+4*t2*t5*t0+2*t4*t0*t1+4*t2*t5),(-3))" << "; \n \n";
 
 	writer << " return 0; \n"
 			"} \n";
@@ -1944,8 +1980,117 @@ void writeCVegas_eps0_3loop(Diagram _diag, std::vector<GiNaC::symbol> _integVars
 	currentPowerOfEps = 0;
 	_poleCoefs.at(2).print(GiNaC::print_csrc(aux));
 	poleCoef = aux.str();
-	// write záhlavok
-	// TODO
+
+
+	std::stringstream s;
+	s << _path << "Diagram_" << _diag.getName() << "_eps0" << ".cpp";
+
+	writer.open(s.str(), std::fstream::out);
+
+	writer << "#include <stdio.h> \n"
+			"#include <stdlib.h> \n"
+			"#include <math.h> \n"
+			"#include <iostream> \n"
+			"#include <fstream> \n"
+			"#include <sstream> \n"
+			"#include\"/home/matej/Downloads/Cuba-4.2.2/cuba.h\" \n \n";
+
+	writer << "#define NDIM " << _integVars.size() << "\n"
+			"#define NCOMP 1 \n"
+			"#define USERDATA NULL \n"
+			"#define NVEC 1 \n"
+			"#define EPSREL 1e-7 \n"
+			"#define EPSABS 1e-12 \n"
+			"#define VERBOSE 2 \n"
+			"#define LAST 4 \n"
+			"#define SEED 0 \n"
+			"#define MINEVAL 0 \n"
+			"#define MAXEVAL 10000000 \n"
+			"\n"
+			"#define NSTART 1000 \n"
+			"#define NINCREASE 500 \n"
+			"#define NBATCH 1000 \n"
+			"#define GRIDNO 0 \n"
+			"#define STATEFILE NULL \n"
+			"#define SPIN NULL \n"
+			"\n"
+			"#define KEY 0 \n";
+
+	writer
+			<< "static int Integrand(const int *ndim, const cubareal xx[], const int *ncomp, cubareal ff[], void *userdata) { \n \n ";
+
+	for (int j = 0; j < _integVars.size(); j++) {
+		writer << "#define " << _integVars.at(j) << " xx[" << j << "] \n";
+	}
+
+	writer << "#define f ff[0] \n \n";
+
+	writer << "f = " << poleCoef << "; \n \n";
+
+	writer << " return 0; \n"
+			"} \n";
+
+	writer
+			<< "int main() { \n"
+					"clock_t begin = clock(); \n"
+					"int comp, nregions, neval, fail; cubareal integral[NCOMP], error[NCOMP], prob[NCOMP]; \n"
+					"\n"
+					"Vegas(NDIM, NCOMP, Integrand, USERDATA, NVEC, \n"
+					"   EPSREL, EPSABS, VERBOSE, SEED, \n"
+					"	MINEVAL, MAXEVAL, NSTART, NINCREASE, NBATCH, \n"
+					"    GRIDNO, STATEFILE, SPIN, \n"
+					"   &neval, &fail, integral, error, prob); "
+					"\n"
+					"printf(\"VEGAS RESULT:\\tneval %d\\tfail %d\\n\", neval, fail); \n"
+					"for( comp = 0; comp < NCOMP; ++comp ) \n"
+					"			printf(\"VEGAS RESULT:\\t%.8f +- %.8f\\tp = %.3f\\n\", "
+					"(double)integral[comp], (double)error[comp], (double)prob[comp]); \n \n"
+					"\n"
+					"clock_t end = clock(); \n"
+					"std::cout << \"Elapsed time: \" << double(end - begin) / CLOCKS_PER_SEC"
+					"<<\"s.\"<< std::endl; \n"
+					"std::stringstream s; \n"
+					"std::fstream writer;\n";
+	writer << "s<<\"" << _path << "Diagram_" << _diag.getName() << "_eps0"
+			<< ".out\"; \n";
+	writer << "writer.open(s.str(), std::fstream::out); \n"
+			"writer<<std::fixed; \n"
+			"writer.precision(10); \n";
+	writer << "writer<<" << overallFactor << "<< \" \\n \"; \n";
+	writer
+			<< "for (comp = 0; comp < NCOMP; ++comp){ \n"
+					"	writer<<(double) integral[comp]<<\"\t\"<<(double) error[comp]<<\"\t\"<<(double) prob[comp]; \n"
+					"}; \n"
+					"return 0; \n} "
+					"\n";
+	//-------------------------------------------------------------------
+
+	writer.close();
+	return;
+}
+
+void writeCVegas_eps0_2loop(Diagram _diag, std::vector<GiNaC::symbol> _integVars,
+		std::vector<GiNaC::ex> _poleCoefs, GiNaC::ex _overallFactor,
+		std::string _path) {
+
+	std::stringstream aux;
+	std::string poleCoef = "";
+
+	std::stringstream a;
+	a << "\"" << _overallFactor << "\"";
+	std::string overallFactor = a.str();
+
+	int currentPowerOfEps;
+
+	std::fstream writer;
+
+	//-------------------------------------------------------------------
+	// eps^{-1}
+	//-------------------------------------------------------------------
+
+	currentPowerOfEps = 1;
+	_poleCoefs.at(1).print(GiNaC::print_csrc(aux));
+	poleCoef = aux.str();
 
 	std::stringstream s;
 	s << _path << "Diagram_" << _diag.getName() << "_eps0" << ".cpp";
@@ -2035,119 +2180,6 @@ void writeCVegas_eps0_3loop(Diagram _diag, std::vector<GiNaC::symbol> _integVars
 	return;
 }
 
-void writeCVegas_eps0_2loop(Diagram _diag, std::vector<GiNaC::symbol> _integVars,
-		std::vector<GiNaC::ex> _poleCoefs, GiNaC::ex _overallFactor,
-		std::string _path) {
-
-	std::stringstream aux;
-	std::string poleCoef = "";
-
-	std::stringstream a;
-	a << "\"" << _overallFactor << "\"";
-	std::string overallFactor = a.str();
-
-	int currentPowerOfEps;
-
-	std::fstream writer;
-
-	//-------------------------------------------------------------------
-	// eps^{-1}
-	//-------------------------------------------------------------------
-
-	currentPowerOfEps = 1;
-	_poleCoefs.at(1).print(GiNaC::print_csrc(aux));
-	poleCoef = aux.str();
-	// write záhlavok
-	// TODO
-
-	std::stringstream s;
-	s << _path << "Diagram_" << _diag.getName() << "_eps1" << ".cpp";
-
-	writer.open(s.str(), std::fstream::out);
-
-	writer << "#include <stdio.h> \n"
-			"#include <stdlib.h> \n"
-			"#include <math.h> \n"
-			"#include <iostream> \n"
-			"#include <fstream> \n"
-			"#include <sstream> \n"
-			"#include\"/home/matej/Downloads/Cuba-4.2.2/cuba.h\" \n \n";
-
-	writer << "#define NDIM " << _integVars.size() << "\n"
-			"#define NCOMP 1 \n"
-			"#define USERDATA NULL \n"
-			"#define NVEC 1 \n"
-			"#define EPSREL 1e-7 \n"
-			"#define EPSABS 1e-12 \n"
-			"#define VERBOSE 2 \n"
-			"#define LAST 4 \n"
-			"#define SEED 0 \n"
-			"#define MINEVAL 0 \n"
-			"#define MAXEVAL 10000000 \n"
-			"\n"
-			"#define NSTART 1000 \n"
-			"#define NINCREASE 500 \n"
-			"#define NBATCH 1000 \n"
-			"#define GRIDNO 0 \n"
-			"#define STATEFILE NULL \n"
-			"#define SPIN NULL \n"
-			"\n"
-			"#define KEY 0 \n";
-
-	writer
-			<< "static int Integrand(const int *ndim, const cubareal xx[], const int *ncomp, cubareal ff[], void *userdata) { \n \n ";
-
-	for (int j = 0; j < _integVars.size(); j++) {
-		writer << "#define " << _integVars.at(j) << " xx[" << j << "] \n";
-	}
-
-	writer << "#define f ff[0] \n \n";
-
-	writer << "f = " << poleCoef << "; \n \n";
-	//writer << "f = 1./4*t0*pow((1+2*t5*t0*pow(t1,2)+6*t4*pow(t2,2)*t0+8*t2*t5*t0*t1+t0*t1+2*t4+8*t4*t2*t0*t1+2*t2+2*t2*t0+6*pow(t2,2)*t5*t0+t0*pow(t1,2)+2*t5*t0*t1+2*t5+4*t4*t2+2*t4*t0*pow(t1,2)+4*t2*t0*t1+2*t5*t1+3*pow(t2,2)*t0+t1+4*t4*t2*t0+2*t4*t1+4*t2*t5*t0+2*t4*t0*t1+4*t2*t5),(-3))" << "; \n \n";
-
-	writer << " return 0; \n"
-			"} \n";
-
-	writer
-			<< "int main() { \n"
-					"clock_t begin = clock(); \n"
-					"int comp, nregions, neval, fail; cubareal integral[NCOMP], error[NCOMP], prob[NCOMP]; \n"
-					"\n"
-					"Vegas(NDIM, NCOMP, Integrand, USERDATA, NVEC, \n"
-					"   EPSREL, EPSABS, VERBOSE, SEED, \n"
-					"	MINEVAL, MAXEVAL, NSTART, NINCREASE, NBATCH, \n"
-					"    GRIDNO, STATEFILE, SPIN, \n"
-					"   &neval, &fail, integral, error, prob); "
-					"\n"
-					"printf(\"VEGAS RESULT:\\tneval %d\\tfail %d\\n\", neval, fail); \n"
-					"for( comp = 0; comp < NCOMP; ++comp ) \n"
-					"			printf(\"VEGAS RESULT:\\t%.8f +- %.8f\\tp = %.3f\\n\", "
-					"(double)integral[comp], (double)error[comp], (double)prob[comp]); \n \n"
-					"\n"
-					"clock_t end = clock(); \n"
-					"std::cout << \"Elapsed time: \" << double(end - begin) / CLOCKS_PER_SEC"
-					"<<\"s.\"<< std::endl; \n"
-					"std::stringstream s; \n"
-					"std::fstream writer;\n";
-	writer << "s<<\"" << _path << "Diagram_" << _diag.getName() << "_eps1"
-			<< ".out\"; \n";
-	writer << "writer.open(s.str(), std::fstream::out); \n"
-			"writer<<std::fixed; \n"
-			"writer.precision(10); \n";
-	writer << "writer<<" << overallFactor << "<< \" \\n \"; \n";
-	writer
-			<< "for (comp = 0; comp < NCOMP; ++comp){ \n"
-					"	writer<<(double) integral[comp]<<\"\t\"<<(double) error[comp]<<\"\t\"<<(double) prob[comp]; \n"
-					"}; \n"
-					"return 0; \n} "
-					"\n";
-	//-------------------------------------------------------------------
-
-	writer.close();
-	return;
-}
-
 //===========================================================================
 // code related to writing output file for Vegas implementation in C
 void writeCVegas_Finite_2loop(Diagram _diag,
@@ -2202,8 +2234,6 @@ void writeFiniteCVegas_eps0(Diagram _diag,
 	//currentPowerOfEps = 1;
 	_finitePartCoefs.at(0).print(GiNaC::print_csrc(aux));
 	coef = aux.str();
-	// write záhlavok
-	// TODO
 
 	std::stringstream s;
 	s << _path << "Diagram_" << _diag.getName() << "_finite_eps0" << ".cpp";
@@ -2249,7 +2279,6 @@ void writeFiniteCVegas_eps0(Diagram _diag,
 	writer << "#define f ff[0] \n \n";
 
 	writer << "f = " << coef << "; \n \n";
-	//writer << "f = 1./4*t0*pow((1+2*t5*t0*pow(t1,2)+6*t4*pow(t2,2)*t0+8*t2*t5*t0*t1+t0*t1+2*t4+8*t4*t2*t0*t1+2*t2+2*t2*t0+6*pow(t2,2)*t5*t0+t0*pow(t1,2)+2*t5*t0*t1+2*t5+4*t4*t2+2*t4*t0*pow(t1,2)+4*t2*t0*t1+2*t5*t1+3*pow(t2,2)*t0+t1+4*t4*t2*t0+2*t4*t1+4*t2*t5*t0+2*t4*t0*t1+4*t2*t5),(-3))" << "; \n \n";
 
 	writer << " return 0; \n"
 			"} \n";
@@ -2318,8 +2347,7 @@ void writeFiniteCVegas_eps1(Diagram _diag,
 	//currentPowerOfEps = 1;
 	_finitePartCoefs.at(1).print(GiNaC::print_csrc(aux));
 	coef = aux.str();
-	// write záhlavok
-	// TODO
+
 
 	std::stringstream s;
 	s << _path << "Diagram_" << _diag.getName() << "_finite_eps1" << ".cpp";

@@ -103,8 +103,6 @@ Propagator::Propagator() {
 
 Propagator::Propagator(std::string _end, std::string _start, std::string _mom) :
 		startVert(_start), endVert(_end) {
-	//GiNaC::symbol momentum(_mom);
-	//this->momentum = momentum;
 	this->momentum = GiNaC::symbol(_mom);
 	this->propType = "";
 }
@@ -112,14 +110,11 @@ Propagator::Propagator(std::string _end, std::string _start, std::string _mom) :
 Propagator::Propagator(std::string _end, std::string _start, std::string _mom,
 		std::string _type) :
 		startVert(_start), endVert(_end) {
-	//GiNaC::symbol momentum(_mom);
-	//this->momentum = momentum;
 	this->momentum = GiNaC::symbol(_mom);
 	this->propType = _type;
 }
 
 Propagator::Propagator(Vertex _end, Vertex _start, GiNaC::ex _mom) {
-	//TODO - do you need the & - for symbol probably yes, for ex ???
 	this->endVert = _end;
 	this->startVert = _start;
 	this->momentum = _mom;
@@ -128,7 +123,6 @@ Propagator::Propagator(Vertex _end, Vertex _start, GiNaC::ex _mom) {
 
 Propagator::Propagator(Vertex _end, Vertex _start, GiNaC::ex _mom,
 		std::string _type) {
-	//TODO - do you need the & - for symbol probably yes, for ex ???
 	this->endVert = _end;
 	this->startVert = _start;
 	this->momentum = _mom;
@@ -136,9 +130,7 @@ Propagator::Propagator(Vertex _end, Vertex _start, GiNaC::ex _mom,
 }
 
 // getters
-//std::string Propagator::getStartVert() const {
-//	return this->startVert;
-//}
+
 Vertex Propagator::getStartVert() const {
 	return this->startVert;
 }
@@ -488,6 +480,8 @@ GiNaC::symbol Diagram::getY1() const{
 GiNaC::symbol Diagram::getY2() const{
 	return this->y2;
 }
+
+
 // setters
 void Diagram::setName(std::string _name) {
 	this->name = _name;
@@ -578,6 +572,7 @@ void Diagram::setY2(GiNaC::symbol _y2){
 	this->y2 = _y2;
 }
 
+
 // print
 void Diagram::print() const {
 	std::cout << "Diagram: " << this->name << "\n";
@@ -638,19 +633,7 @@ void Diagram::print() const {
 
 	std::cout << "Factor from vertices and mP propags: ";
 	std::cout << this->factorsFromVertsAndProps << "\n";
-	//std::cout << "\n";
 
-	std::cout << "Factor in numerator created by p^2 derivative: ";
-	std::cout << this->createdNumeratorByDerivative << "\n";
-	//std::cout << "\n";
-	std::cout << "Indices of propagators contributing to numerator created by p^2 derivative: {";
-	for (int i = 0; i < this->indicesOfPropsWhichContrToNumerator.size(); i++) {
-			std::cout << this->indicesOfPropsWhichContrToNumerator.at(i);
-			if (i != this->indicesOfPropsWhichContrToNumerator.size() - 1) {
-				std::cout << ", ";
-			}
-		}
-	std::cout << "}" << "\n";
 	std::cout << "\n";
 	return;
 }
@@ -674,10 +657,6 @@ Diagram& Diagram::operator=(const Diagram &rhs) {
 	this->symmetryFactor = rhs.symmetryFactor;
 	this->factorsFromVertsAndProps = rhs.factorsFromVertsAndProps;
 	this->d = rhs.d;
-	this->createdNumeratorByDerivative = rhs.createdNumeratorByDerivative;
-	this->indicesOfPropsWhichContrToNumerator = rhs.indicesOfPropsWhichContrToNumerator;
-	this->y1 = rhs.y1;
-	this->y2 = rhs.y2;
 	return *this;
 }
 
@@ -747,7 +726,7 @@ int Diagram::findNumOfLoopsPhi3() {
 					return -1;
 				} else {
 					std::cout
-							<< "The diagram has non Phi3 vertices. I don't know yet. -findNumOfLoopsPhi3()"
+							<< "The diagram has non Phi3 vertices. -findNumOfLoopsPhi3()"
 							<< std::endl;
 					return -1;
 				}
@@ -844,9 +823,6 @@ std::vector<Propagator> makeDiagramsPropagatorsFromStrings(
 	 * where every vector contains strings, every one of which represents propag.
 	 * in the format "startVert endVert momentum"
 	 *
-	 * TODO - it is stupid format - make it better - right now it only works
-	 * for vertex names out of one char
-	 *
 	 * return: std::vector<Propagator> that gets fetched into diagram constructor
 	 * */
 
@@ -879,9 +855,6 @@ std::vector<Propagator> makeDiagramsPropagatorsFromStrings(
 std::vector<Vertex> makeDiagramsVerticesFromString(std::string _input) {
 	/* Function takes input in form  "ABCDEFXYZ"
 	 * where every char represents vertex
-	 *
-	 * TODO - it is stupid format - make it better - right now it only works
-	 * for vertex names out of one char
 	 *
 	 * return: std::vector<Vertex> that gets fetched into diagram constructor
 	 * */
@@ -940,7 +913,7 @@ std::vector<std::vector<std::string>> divideNickel(std::string _nickelInput) {
 				continue;
 			}
 		} else {
-			// if topToFieldTransition == 1
+
 			if (newEntry == 0) {
 				fieldEntry += _nickelInput.at(i);
 			} else {
@@ -954,13 +927,7 @@ std::vector<std::vector<std::string>> divideNickel(std::string _nickelInput) {
 		}
 
 	}
-//test
-//std::cout<<topologies.size();
-//std::cout<<_nickelInput;
-//for(int i = 0; i < 5; i++){
-//	std::cout<<topologies.at(i)<<std::endl;
-//	std::cout<<fields.at(i)<<std::endl;
-//}
+
 	result.push_back(topologies);
 	result.push_back(fields);
 	return result;
@@ -971,7 +938,7 @@ std::vector<Vertex> findNodesFromNickel(std::string _nickelInput) {
 // creates and returns a vector<Vertex> of diagrams vertices
 // NOTE: also external
 
-//std::vector<Vertex> test;
+
 	std::vector<Vertex> result;
 	Vertex current;
 	int alreadyHaveExt = 0;
@@ -1194,28 +1161,7 @@ std::vector<Propagator> repairCausality(std::vector<Propagator> _propags) {
 			_propags.at(i).setStartVert(aux);
 			_propags.at(i).setPropType("pP");
 		}
-		// ======================
-		// SOMETHING SEEMS FISHY ABOUT NICKEL INDICES (FIELD DESCR.) FOR EXT. POINTS
-		// ======================
-		//if (_propags.at(i).getPropType().compare("0p") == 0) {
-		//	aux = _propags.at(i).getEndVert();
-		//	_propags.at(i).setEndVert(_propags.at(i).getStartVert());
-		//	_propags.at(i).setStartVert(aux);
-		//	_propags.at(i).setPropType("p0");
-		//}
-		//if (_propags.at(i).getPropType().compare("P0") == 0) {
-		//	aux = _propags.at(i).getEndVert();
-		//	_propags.at(i).setEndVert(_propags.at(i).getStartVert());
-		//	_propags.at(i).setStartVert(aux);
-		//	_propags.at(i).setPropType("0P");
-		//}
-		// ======================
 
-		// ======================
-		// IT SEEMS AS IF FIELDS IN NICKEL ARE ALWAYS WRITTEN AS "0P" OR "0P"
-		// REGARDLES OF ACCORDANCE WITH TOPOLOGY -> SEE OUR ARTICLE
-		// TODO - check Kompaniets
-		// ======================
 		if (_propags.at(i).getPropType().compare("0p") == 0) {
 			if (_propags.at(i).getEndVert().getVertName().compare("e") == 0) {
 				aux = _propags.at(i).getEndVert();
@@ -1429,7 +1375,7 @@ std::vector<GiNaC::symbol> addGeneralExtMomenta(Diagram &_diag,
 
 std::vector<GiNaC::symbol> assignExtMom_IPMomRouting(Diagram &_diag,
 		std::string _zeroExtMomenta) {
-// TODO test
+
 // assign external momenta
 // so far it works for 2 point functions
 
@@ -1439,8 +1385,6 @@ std::vector<GiNaC::symbol> assignExtMom_IPMomRouting(Diagram &_diag,
 //
 // NOTE: function not only returns the vector of extMomenta but also sets extMomenta
 // inside _diag (notice &) (to propagators)
-//
-// NOTE: at this point the function can only handle 2 point functions.
 
 	std::vector<GiNaC::symbol> result = { };
 	Propagator propToSet; // help variable
@@ -1454,7 +1398,7 @@ std::vector<GiNaC::symbol> assignExtMom_IPMomRouting(Diagram &_diag,
 				propToSet = _diag.getExtPropags().at(i);
 				propToSet.setMomentum(p0);
 				_diag.setExtPropagAtIndex(propToSet, i);
-				//usedProps.push_back(_diag.getExtPropags().at(i));
+
 			}
 		}
 
@@ -1480,19 +1424,17 @@ std::vector<GiNaC::symbol> assignExtMom_IPMomRouting(Diagram &_diag,
 					propToSet.setMomentum(p0 + p1);
 					_diag.setExtPropagAtIndex(propToSet, i);
 				}
-				//usedProps.push_back(_diag.getExtPropags().at(i));
+
 			}
 		}
 	} else {
 		// if ext. momenta are to be zero
-		//if (_diag.getExtPropags().size() == 2) {
+
 		for (int i = 0; i < _diag.getExtPropags().size(); i++) {
 			propToSet = _diag.getExtPropags().at(i);
 			propToSet.setMomentum(0);
 			_diag.setExtPropagAtIndex(propToSet, i);
-			//usedProps.push_back(_diag.getExtPropags().at(i));
 		}
-		//}
 	}
 // if 3 point
 // exactly the same thing is done
@@ -1513,8 +1455,6 @@ std::vector<GiNaC::symbol> assignIntMom_IPMomRouting(Diagram &_diag) {
 //
 // NOTE: function not only returns the vector of intMomenta but also sets intMomenta
 // inside _diag (notice &)
-//
-// NOTE: at this point the function can only handle 2 point functions.
 
 	Propagator propToSet; // help variable
 	std::vector<GiNaC::symbol> result;
@@ -1530,7 +1470,7 @@ std::vector<GiNaC::symbol> assignIntMom_IPMomRouting(Diagram &_diag) {
 
 		if (_diag.getIntPropags().at(i).getPropType().compare("mP") == 0) {
 			name.str("");
-			name << "k" << aux; // implicitné pretypovanie
+			name << "k" << aux; // implicit type change
 			aux++;
 			GiNaC::symbol current(name.str());
 			result.push_back(current);
@@ -1692,7 +1632,7 @@ std::vector<Propagator> assignMomByConservation(Diagram &_diag,
 				// if the propag doesn't have momentum set yet, get its index
 				// in propPool
 				indexOfNotUsed = i;
-				isNotUsedInflowing = isInflowing; // is it inflowing to vertex??
+				isNotUsedInflowing = isInflowing;
 			}
 		}
 
@@ -1748,7 +1688,7 @@ bool doesMomConsHold(Diagram _diag) {
 	appendVectors(allProps, _diag.getIntPropags());
 	Vertex currentVert;
 	GiNaC::ex sum = 0;
-//bool isInflowing;
+
 
 // go through all vertices
 	for (int i = 0; i < _diag.getVertices().size(); i++) {
@@ -1765,15 +1705,12 @@ bool doesMomConsHold(Diagram _diag) {
 
 			if (propPool.at(j).getEndVert() == currentVert) {
 				// if the momentum is inflowing
-				//isInflowing = true;
 				sum += propPool.at(j).getMomentum();
 			} else {
 				// if the momentum is outflowing
-				//isInflowing = false;
 				sum -= propPool.at(j).getMomentum();
 			}
 
-			//sum += propPool.at(j).getMomentum();
 		}
 
 		if (sum == 0) {
@@ -1819,7 +1756,7 @@ void dividePropsType_mP(Diagram &_diag) {
 		}
 
 		// when i have mP propagator a create a name for new vertex
-		name = nameNum; // implicitné pretypovanie
+		name = nameNum; // implicit type change
 		nameNum++;
 		strName = "";
 		strName += name;
@@ -1878,9 +1815,6 @@ std::vector<Diagram> addVertCorrespToFrequencyDeriv(Diagram _parentDiag) {
 // where there is ext. momentum there is ext. frequency which we are after
 // i.e. the new vertex can only be inserted to internal leg carrying ext. momentum
 
-// now we only programmed IPMomRouting for 2 point functions, so there is only one
-// external momentum p0 (in IPMomRouting)
-// TODO - more general case
 	GiNaC::symbol extMom = created.getExtMomenta().at(0);
 
 // this will be name of newly created vertex (only one needs to be created - one frequency derivative)
@@ -1970,13 +1904,9 @@ Diagram setExtMomToZero(Diagram _inputDiag) {
 	Diagram result = _inputDiag;
 	Propagator currentProp;
 
-// now we only programmed IPMomRouting for 2 point functions, so there is only one
-// external momentum p0 (in IPMomRouting)
-// TODO - more general case
 	GiNaC::symbol extMom = result.getExtMomenta().at(0);
 
 	GiNaC::ex currentMom;
-//std::vector<GiNaC::symbol> newMomenta;
 
 // test - catching possible problems and wrong input
 	if (_inputDiag.getExtPropags().size() > 2) {
@@ -2011,7 +1941,7 @@ Diagram setExtMomToZero(Diagram _inputDiag) {
 //===========================================================================
 
 //===========================================================================
-// Code for getting part proportional to tau - TODO
+// Code for getting part proportional to tau
 std::vector<Diagram> addVertCorrespToTauDeriv(Diagram _parentDiag) {
 // Here we deal with question of finding divergent part of two point functions
 // proportional to tau. The function is analogical to finding part propto ext. freq.
@@ -2042,8 +1972,6 @@ std::vector<Diagram> addVertCorrespToTauDeriv(Diagram _parentDiag) {
 
 // now we only programmed IPMomRouting for 2 point functions, so there is only one
 // external momentum p0 (in IPMomRouting)
-// TODO - more general case
-//GiNaC::symbol extMom = created.getExtMomenta().at(0);
 
 // this will be name of newly created vertex (only one needs to be created - one frequency derivative)
 	std::string name = "f";
@@ -2113,7 +2041,6 @@ std::vector<Diagram> addVertCorrespToTauDeriv(Diagram _parentDiag) {
 			createdVert = Vertex(name, "pP");
 
 			// split the propagator into two
-			// TODO .....
 			split1 = Propagator(currentProp.getEndVert(), createdVert,
 					currentProp.getMomentum(), "MP");
 			split2 = Propagator(createdVert, currentProp.getStartVert(),
@@ -2151,426 +2078,4 @@ std::vector<Diagram> addVertCorrespToTauDeriv(Diagram _parentDiag) {
 }
 
 //===========================================================================
-
-//===========================================================================
-// Code for getting part proportional to ext. momentum (p^2)
-
-std::vector<Diagram> addVertsCorrespToPDeriv(Diagram &_parentDiag) {
-	// Function combines effects of the functions addVertType1, addVertsType2
-	// and addVertsType3_crossTerms
-	std::vector<Diagram> result;
-	std::vector<Diagram> res1 = addVertType1(_parentDiag);
-	std::vector<Diagram> res2 = addVertsType2(_parentDiag);
-	std::vector<Diagram> res3 = addVertsType3_crossTerms(_parentDiag);
-
-	for (int i = 0; i < res1.size(); i++) {
-		result.push_back(res1.at(i));
-	}
-
-	for (int i = 0; i < res2.size(); i++) {
-		result.push_back(res2.at(i));
-	}
-
-	for (int i = 0; i < res3.size(); i++) {
-		result.push_back(res3.at(i));
-	}
-
-	return result;
-}
-
-std::vector<Diagram> addVertType1(Diagram &_parentDiag) {
-	// Vert type 1 when differentiating w.r.t p^2 is the one analogous to
-	// tau derivative (second derivative acts on the factor of momenta in numerator
-	// brought about by first derivative)
-	std::vector<Diagram> result;
-	Diagram created = _parentDiag;
-	std::stringstream createdDiagName;
-	Vertex createdVert;
-	Propagator split1;
-	Propagator split2;
-	std::vector<Propagator> newProps = { };
-	std::vector<Vertex> newVerts = { };
-	Propagator currentProp;
-	GiNaC::symbol D0 = _parentDiag.getD_0();
-
-	// i.e. the new vertex can only be inserted to internal leg carrying ext. momentum
-
-	// now we only programmed IPMomRouting for 2 point functions, so there is only one
-	// external momentum p0 (in IPMomRouting)
-
-	//GiNaC::symbol extMom = created.getExtMomenta().at(0);
-
-	// this will be name of newly created vertex (only one needs to be created)
-	std::string name = "f";
-
-	// just some tests to catch possible problems
-	if (_parentDiag.getExtPropags().size() > 2) {
-		std::cout
-				<< "Right now I cannot do diagrams of 3 point and more point functions. -addVertCorrespToFrequencyInt()"
-				<< std::endl;
-		return result;
-	}
-
-	// naturally the function can be used only when diagram has non-zero ext. mom. (and ext. freq.)
-	for (int i = 0; i < _parentDiag.getExtPropags().size(); i++) {
-		if (_parentDiag.getExtPropags().at(i).getMomentum() == 0) {
-			std::cout
-					<< "Illegal actions. Diagram has ext. momenta set to zero (freq's also)."
-							"Therefore derivative w.r.t. ext. mom gives zero. -addVertCorrsepToMomDeriv()"
-					<< std::endl;
-			return result;
-		}
-	}
-
-	// since only 2 point functions are allowed and IPMomRouting must be used
-	if (_parentDiag.getExtMomenta().size() != 1) {
-		std::cout
-				<< "Illegal actions. You probably didn't use IPMomRouting which is required"
-						"-addVertCorrsepToMomDeriv()" << std::endl;
-		return result;
-	}
-
-	GiNaC::symbol extMom = created.getExtMomenta().at(0);
-	// back to code
-	// go through all internal propagators
-	for (int i = 0; i < _parentDiag.getIntPropags().size(); i++) {
-		created = _parentDiag;
-
-		currentProp = created.getIntPropags().at(i);
-
-		// i want to only divide paropagators with p
-		if (!currentProp.getMomentum().has(extMom)) {
-			continue;
-		}
-
-		// create new vertex
-		createdVert = Vertex(name, "pP");
-
-		// split the propagator into two
-		split1 = Propagator(currentProp.getEndVert(), createdVert,
-				currentProp.getMomentum(), "pP");
-		split2 = Propagator(createdVert, currentProp.getStartVert(),
-				currentProp.getMomentum(), "pP");
-
-		// one of the newly created props directly replaces old propagator in diagram
-		created.setIntPropagAtIndex(split2, i);
-		newProps.push_back(split1);
-		newVerts.push_back(createdVert);
-
-		// the rest are appended
-		appendVectors(newProps, created.getIntPropags());
-		appendVectors(newVerts, created.getVertices());
-		created.setIntPropags(newProps);
-		created.setVertices(newVerts);
-
-		// give returend diagram some different name to differentiate it from parent
-		createdDiagName.str("");
-		createdDiagName << "type1_" << result.size() << "_"
-				<< _parentDiag.getName();
-		created.setName(createdDiagName.str());
-
-		// you have to multiply this by factor -D_0 - because of derivatives
-		GiNaC::ex newFactor = created.getFactorsFromVertsAndProps();
-		//GiNaC::ex newFactor = created.getFactorsFromVertsAndProps() * (-D0);
-		created.setFactorsFromVertsAndProps(newFactor);
-
-		//GiNaC::ex createdNumerator = (-D0*D0);
-		GiNaC::ex createdNumerator = (-D0);
-		created.setCreatedNumeratorByDerivative(createdNumerator);
-		// if it is proportional to tau it will not be to ext. momentum/frequency
-		// therefore ext. mom may be set to zero
-		result.push_back(setExtMomToZero(created));
-
-		// reset variables for next iteration
-		newProps.clear();
-		newVerts.clear();
-
-	}
-
-	return result;
-}
-
-std::vector<Diagram> addVertsType2(Diagram &_parentDiag) {
-	// Vert type 2 when differentiating w.r.t p^2 is the one where
-	// second derivative acts again on the same propagator as first
-	// this brings about factor of momentum of the prop. squared into numerator
-	// and 2 unit vertices
-	std::vector<Diagram> result;
-	Diagram created = _parentDiag;
-	std::stringstream createdDiagName;
-	Vertex createdVert1;
-	Vertex createdVert2;
-	Propagator split1;
-	Propagator split2;
-	Propagator split3;
-	std::vector<Propagator> newProps = { };
-	std::vector<Vertex> newVerts = { };
-	Propagator currentProp;
-	GiNaC::symbol D0 = _parentDiag.getD_0();
-	GiNaC::symbol d = _parentDiag.getD();
-
-	// i.e. the new vertex can only be inserted to internal leg carrying ext. momentum
-
-	// now we only programmed IPMomRouting for 2 point functions, so there is only one
-	// external momentum p0 (in IPMomRouting)
-
-	//GiNaC::symbol extMom = created.getExtMomenta().at(0);
-
-	// this will be name of newly created vertex
-	std::string name1 = "f";
-	std::string name2 = "g";
-
-	// just some tests to catch possible problems
-	if (_parentDiag.getExtPropags().size() > 2) {
-		std::cout
-				<< "Right now I cannot do diagrams of 3 point and more point functions. -addVertCorrespToFrequencyInt()"
-				<< std::endl;
-		return result;
-	}
-
-	// naturally the function can be used only when diagram has non-zero ext. mom. (and ext. freq.)
-	for (int i = 0; i < _parentDiag.getExtPropags().size(); i++) {
-		if (_parentDiag.getExtPropags().at(i).getMomentum() == 0) {
-			std::cout
-					<< "Illegal actions. Diagram has ext. momenta set to zero (freq's also)."
-							"Therefore derivative w.r.t. ext. mom gives zero. -addVertCorrsepToMomDeriv()"
-					<< std::endl;
-			return result;
-		}
-	}
-
-	// since only 2 point functions are allowed and IPMomRouting must be used
-	if (_parentDiag.getExtMomenta().size() != 1) {
-		std::cout
-				<< "Illegal actions. You probably didn't use IPMomRouting which is required"
-						"-addVertCorrsepToMomDeriv()" << std::endl;
-		return result;
-	}
-
-	GiNaC::symbol extMom = created.getExtMomenta().at(0);
-	// back to code
-	// go through all internal propagators
-	for (int i = 0; i < _parentDiag.getIntPropags().size(); i++) {
-		created = _parentDiag;
-
-		currentProp = created.getIntPropags().at(i);
-
-		// i want to only divide paropagators with p
-		if (!currentProp.getMomentum().has(extMom)) {
-			continue;
-		}
-
-		// create new vertex
-		createdVert1 = Vertex(name1, "pP");
-		createdVert2 = Vertex(name2, "pP");
-		// split the propagator into two
-		split1 = Propagator(currentProp.getEndVert(), createdVert1,
-				currentProp.getMomentum(), "pP");
-		split2 = Propagator(createdVert1, createdVert2,
-				currentProp.getMomentum(), "pP");
-		split3 = Propagator(createdVert2, currentProp.getStartVert(),
-				currentProp.getMomentum(), "pP");
-
-		// one of the newly created props directly replaces old propagator in diagram
-		created.setIntPropagAtIndex(split2, i);
-		newProps.push_back(split1);
-		newProps.push_back(split3);
-		newVerts.push_back(createdVert1);
-		newVerts.push_back(createdVert2);
-
-		// the rest are appended
-		appendVectors(newProps, created.getIntPropags());
-		appendVectors(newVerts, created.getVertices());
-		created.setIntPropags(newProps);
-		created.setVertices(newVerts);
-
-		// give returend diagram some different name to differentiate it from parent
-		createdDiagName.str("");
-		createdDiagName << "type2_" << result.size() << "_"
-				<< _parentDiag.getName();
-		created.setName(createdDiagName.str());
-
-		// you have to multiply this by factor (+4/d)*D_0^2 - because of derivatives
-		//GiNaC::ex newFactor = created.getFactorsFromVertsAndProps();
-		//GiNaC::ex newFactor = created.getFactorsFromVertsAndProps()
-		//		* (4 * GiNaC::pow(D0, 2) / d);
-		//created.setFactorsFromVertsAndProps(newFactor);
-
-		// there is factor of momentum squared of the given propagator that appears
-		// in numerator and factor of (4 * GiNaC::pow(D0, 2) / d)
-		// the former is not written - it is taken care of later thanks to fact
-		// that it is type 2
-		// the latter is explicitly written here and later added to I in FinalIntegral
-
-		//GiNaC::ex createdNumerator = currentProp.getMomentum().subs(
-		//		extMom == 0);
-		//createdNumerator = GiNaC::pow(createdNumerator, 2);
-		GiNaC::ex createdNumerator = (4 * GiNaC::pow(D0, 2) / d);
-		created.setCreatedNumeratorByDerivative(createdNumerator);
-		std::vector<int> indices = {};
-		//created.print();
-		//split2.print();
-		//std::cout<<findIndexOfPropInsideVector(split2, created.getIntPropags());
-		indices.push_back(findIndexOfPropInsideVector(split2, created.getIntPropags()));
-		//std::cout<<indices.at(0);
-		created.setIndicesOfPropsWhichContrToNumerator(indices);
-		//created.print();
-		// if it is proportional to tau it will not be to ext. momentum/frequency
-		// therefore ext. mom may be set to zero
-		result.push_back(setExtMomToZero(created));
-
-		// reset variables for next iteration
-		newProps.clear();
-		newVerts.clear();
-
-	}
-	return result;
-}
-
-std::vector<Diagram> addVertsType3_crossTerms(Diagram &_parentDiag) {
-	// Cross terms - one derivative acts on one propagator carrying ext. frequency
-	// second on another propag. carrying ext. frequency - unit vertex added to both
-	// proppagators and factor with dot product of resp. momenta appears in numerator
-	std::vector<Diagram> result;
-	Diagram created = _parentDiag;
-	std::stringstream createdDiagName;
-	Vertex createdVert1;
-	Vertex createdVert2;
-	Propagator split1;
-	Propagator split2;
-	Propagator split3;
-	Propagator split4;
-	std::vector<Propagator> newProps = { };
-	std::vector<Vertex> newVerts = { };
-	Propagator currentProp1;
-	Propagator currentProp2;
-	GiNaC::symbol D0 = _parentDiag.getD_0();
-	GiNaC::symbol d = _parentDiag.getD();
-
-	// i.e. the new vertex can only be inserted to internal leg carrying ext. momentum
-
-	// now we only programmed IPMomRouting for 2 point functions, so there is only one
-	// external momentum p0 (in IPMomRouting)
-
-	//GiNaC::symbol extMom = created.getExtMomenta().at(0);
-
-	// this will be name of newly created vertex
-	std::string name1 = "f";
-	std::string name2 = "g";
-
-	// just some tests to catch possible problems
-	if (_parentDiag.getExtPropags().size() > 2) {
-		std::cout
-				<< "Right now I cannot do diagrams of 3 point and more point functions. -addVertCorrespToFrequencyInt()"
-				<< std::endl;
-		return result;
-	}
-
-	// naturally the function can be used only when diagram has non-zero ext. mom. (and ext. freq.)
-	for (int i = 0; i < _parentDiag.getExtPropags().size(); i++) {
-		if (_parentDiag.getExtPropags().at(i).getMomentum() == 0) {
-			std::cout
-					<< "Illegal actions. Diagram has ext. momenta set to zero (freq's also)."
-							"Therefore derivative w.r.t. ext. frequency gives zero. -addVertCorrsepToFrequencyDeriv()"
-					<< std::endl;
-			return result;
-		}
-	}
-
-	// since only 2 point functions are allowed and IPMomRouting must be used
-	if (_parentDiag.getExtMomenta().size() != 1) {
-		std::cout
-				<< "Illegal actions. You probably didn't use IPMomRouting which is required"
-						"-addVertCorrsepToFrequencyDeriv()" << std::endl;
-		return result;
-	}
-
-	GiNaC::symbol extMom = created.getExtMomenta().at(0);
-	// back to code
-	// go through all pairs of internal propagators
-	for (int i = 0; i < _parentDiag.getIntPropags().size(); i++) {
-		for (int j = 0; j < _parentDiag.getIntPropags().size(); j++) {
-			created = _parentDiag;
-
-			// if i==j then we have vertsType2 - already done
-			if (i == j) {
-				continue;
-			}
-
-			currentProp1 = created.getIntPropags().at(i);
-			currentProp2 = created.getIntPropags().at(j);
-
-			// i want to only divide paropagators with p
-			if (!currentProp1.getMomentum().has(extMom)) {
-				continue;
-			}
-			if (!currentProp2.getMomentum().has(extMom)) {
-				continue;
-			}
-
-			// create new vertex
-			createdVert1 = Vertex(name1, "pP");
-			createdVert2 = Vertex(name2, "pP");
-			// split the propagator into two
-			split1 = Propagator(currentProp1.getEndVert(), createdVert1,
-					currentProp1.getMomentum(), "pP");
-			split2 = Propagator(createdVert1, currentProp1.getStartVert(),
-					currentProp1.getMomentum(), "pP");
-			split3 = Propagator(currentProp2.getEndVert(), createdVert2,
-					currentProp2.getMomentum(), "pP");
-			split4 = Propagator(createdVert2, currentProp2.getStartVert(),
-					currentProp2.getMomentum(), "pP");
-
-			// one of the newly created props directly replaces old propagator in diagram
-			created.setIntPropagAtIndex(split2, i);
-			created.setIntPropagAtIndex(split4, j);
-			newProps.push_back(split1);
-			newProps.push_back(split3);
-			newVerts.push_back(createdVert1);
-			newVerts.push_back(createdVert2);
-
-			// the rest are appended
-			appendVectors(newProps, created.getIntPropags());
-			appendVectors(newVerts, created.getVertices());
-			created.setIntPropags(newProps);
-			created.setVertices(newVerts);
-
-			// give returend diagram some different name to differentiate it from parent
-			createdDiagName.str("");
-			createdDiagName << "type3_" << result.size() << "_"
-					<< _parentDiag.getName();
-			created.setName(createdDiagName.str());
-
-
-
-			GiNaC::ex newFactor = created.getFactorsFromVertsAndProps();
-			//GiNaC::ex newFactor = created.getFactorsFromVertsAndProps()
-			//		* (2 * d * GiNaC::pow(D0, 2));
-			created.setFactorsFromVertsAndProps(newFactor);
-
-			// there is factor of dot product of momenta of the given propagators that are diff'ed
-			// in numerator and factor of (+2*d)*D_0^2
-			// the former is not written - it is taken care of later thanks to fact
-			// that it is type 3
-			// the latter is explicitly written here and later added to I in FinalIntegral
-
-			GiNaC::ex createdNumerator = (2 * d * GiNaC::pow(D0, 2));
-			created.setCreatedNumeratorByDerivative(createdNumerator);
-			std::vector<int> indices = {};
-			indices.push_back(findIndexOfPropInsideVector(split2, created.getIntPropags()));
-			indices.push_back(findIndexOfPropInsideVector(split4, created.getIntPropags()));
-			created.setIndicesOfPropsWhichContrToNumerator(indices);
-			// if it is proportional to tau it will not be to ext. momentum/frequency
-			// therefore ext. mom may be set to zero
-			result.push_back(setExtMomToZero(created));
-
-			// reset variables for next iteration
-			newProps.clear();
-			newVerts.clear();
-
-		}
-	}
-	return result;
-}
-
 //===========================================================================

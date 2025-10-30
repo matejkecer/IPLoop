@@ -1,7 +1,6 @@
 //============================================================================
 // Name        : IPLoop.cpp
 // Author      : M. Kecer
-// Version     : 12.1
 // Description : Code performs 3-loop calculations in dynamic isotropic percolation
 //============================================================================
 
@@ -39,7 +38,7 @@ int main() {
 	for(int i = 0; i < diags.size(); i++){
 
 		currentPath = PATH + "T5_" + topologyT5 + "/" + diags.at(i).getName() + "/";
-		findDivergentPartsPropToExtMom_3loop(diags.at(i), currentPath);
+		findDivergentPartsPropToExtFreq_3loop(diags.at(i), currentPath);
 
 	}
 

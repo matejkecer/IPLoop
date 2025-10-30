@@ -2,7 +2,7 @@
  * TimeOrderingsAndTimeCuts.hpp
  *
  *  Created on: Aug 10, 2023
- *      Author: matej
+ *      Author: M. Kecer
  */
 
 #ifndef TIMEORDERINGSANDTIMECUTS_GINAC_HPP_

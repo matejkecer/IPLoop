@@ -2,14 +2,13 @@
  * SectorDecomposition.hpp
  *
  *  Created on: 25. 8. 2023
- *      Author: matej
+ *      Author: M. Kecer
  */
 
 #ifndef SECTORDECOMPOSITION_HPP_
 #define SECTORDECOMPOSITION_HPP_
 
 #include "ElementsAndInput_ginac.hpp"
-//#include "SpTreesAndForests.hpp"
 #include "TimeOrderingsAndTimeCuts_ginac.hpp"
 #include "FeynmanAndAlphaParam.hpp"
 #include "OutputWriter.hpp"
@@ -263,9 +262,8 @@ public:
 	void print();
 
 private:
-	//GiNaC::ex findIntegrand(Sector _sec);
+
 	GiNaC::ex findI(Sector _sec);
-	//GiNaC::ex findR(Sector _sec);
 };
 
 //===========================================================================
@@ -275,7 +273,6 @@ std::vector<PrimarySector> generatePrimarySectors(FeynmanParam &_feyn);
 
 //===========================================================================
 // Code related to finding subsectors (step II.)
-// TODO
 
 bool paramUOrFIsZeroAtLowerIntBoundary(Sector _sector,
 		std::vector<GiNaC::symbol> _vars);
@@ -332,8 +329,6 @@ void makeProperOverallFactor2_3loop(FinalIntegral &_int);
 // Putting it all together
 
 std::vector<GiNaC::ex> listCoefsOfDivergentPartPropToExtFreq(Diagram _diag);
-
-//bool OvFactorsAreTheSameEverywhere(std::vector<GiNaC::ex> _ovFactors);
 
 void findDivergentPartsPropToExtFreq_3loop(Diagram _diag,
 		std::string _path);

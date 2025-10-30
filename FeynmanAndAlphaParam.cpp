@@ -10,7 +10,6 @@
 // constructors
 FeynmanParam::FeynmanParam() {
 
-	//this->timeOrdering = { };
 	this->diag = Diagram();
 	this->timeOrdering = { };
 	this->loopMomenta = { };
@@ -593,12 +592,10 @@ GiNaC::ex findF(FeynmanParam &_feyn, std::vector<Vertex> _timeOrdering,
 	GiNaC::matrix V = _feyn.getV();
 	GiNaC::matrix zero(1, _feyn.getLoopMomenta().size()); // for comparison
 	GiNaC::matrix Vinv = V.inverse();
-	//std::cout<<A(0,0);
 	if (A == zero) {
 		result *= _feyn.getU();
 	} else {
 		// if A is nonzero
-		//std::cout<<A(0,0);
 		for (int i = 0; i < _feyn.getLoopMomenta().size(); i++) {
 			for (int s = 0; s < _feyn.getLoopMomenta().size(); s++) {
 				result -= A(0, s) * Vinv(i, s) * A(0, i);
@@ -679,8 +676,7 @@ std::vector<std::vector<GiNaC::ex>> getPropDenomsForFeynmanParam_forGeneralFormu
 	GiNaC::ex overallNumFactor = 1;
 	GiNaC::ex currentDenom;
 	GiNaC::ex currentNumFactor = 1;
-	int indexOfCurrentInResult = -1; //TODO - dont forget to reset it later in for cycle
-
+	int indexOfCurrentInResult = -1;
 	std::vector<GiNaC::ex> allDenoms;
 	std::vector<GiNaC::ex> usedDenoms;
 
@@ -722,7 +718,6 @@ std::vector<std::vector<GiNaC::ex>> getPropDenomsForFeynmanParam_forGeneralFormu
 
 			currentNumFactor = currentDenom / result.at(indexOfCurrentInResult);
 
-			// TODO - check if this gives the correct ginac comparison
 			if (currentNumFactor < 1) {
 				// if currentNumFactor < 1 - i don't have correct expression in the
 				// result vector, I have to replace the expression in result by currentDenom,
@@ -755,7 +750,6 @@ std::vector<std::vector<GiNaC::ex>> getPropDenomsForFeynmanParam_forGeneralFormu
 				// 1/(2*(...)) = ( 1/(inResult)^2 )*(1/2) -> numFactor should be updated
 				// by 1/2 i.e. by inResult/currentDenom
 
-				// TODO - check
 				// this is always the case with -> you update with num factor by const. to
 				// power 1, only when you don't have correct expression in result
 				// then do you need to put some power to it
@@ -792,9 +786,6 @@ std::vector<std::vector<GiNaC::ex>> getPropDenomsForFeynmanParam_forGeneralFormu
 std::vector<std::vector<GiNaC::ex>> getPropDenomsForFeynmanParam_forBasicFormula(
 		std::vector<std::vector<Propagator>> _cutsForGivenTimeOrdering,
 		FeynmanParam &_feyn, GiNaC::symbol &_tau) {
-
-	// TODO - will this give the same result as general formula? will it even work?
-
 	// return vector<vector<ginac::ex>> = { {denoms}, {their powers in integrand}, {overall num factor} }
 	// actually - it being a basic formula the powers will all be one, and overall num factor too
 	// the format of return is only such to be compatible with other functions such as find Q,C,V etc.
@@ -812,8 +803,6 @@ std::vector<std::vector<GiNaC::ex>> getPropDenomsForFeynmanParam_forBasicFormula
 	// if there are two denominators which are merely multiples of each other,
 	// e.g. (k^2+t) and (2k^2+2t) = 2*(k^2+t), then both will be treated as separate distinct
 	// denoms, also the factor 2 from 2*(k^2+t) will not be factored out
-
-	// TODO - test
 
 	std::vector<GiNaC::ex> allDenoms = { };
 	std::vector<GiNaC::ex> ginacPowers;
@@ -857,7 +846,6 @@ void useQuadraticFormulaToIntegrateOverLoopMomenta(FeynmanParam &_feyn) {
 	GiNaC::ex newOverallFactor2 = _feyn.getOverallFactor2();
 
 	newOverallFactor2 *= 1 / GiNaC::pow((4 * GiNaC::Pi), l * d / 2);
-	//newOverallFactor2 *= GiNaC::tgamma(alpha - l * d / 2) / GiNaC::tgamma(alpha);
 	newOverallFactor2 *= GiNaC::tgamma(alpha - l * d / 2);
 	newOverallNumFactor /= GiNaC::tgamma(alpha);
 
@@ -867,9 +855,6 @@ void useQuadraticFormulaToIntegrateOverLoopMomenta(FeynmanParam &_feyn) {
 	// b) find determinant of V
 	GiNaC::ex detV = V.determinant();
 	_feyn.setU(detV);
-	//GiNaC::ex newNumerator = _feyn.getNumerator();
-	//newNumerator *= GiNaC::pow(detV, -d / 2);
-	//_feyn.setNumerator(newNumerator);
 
 	// c) find inverse of V - only if A is nonzero vector
 	// now A is matrix of size 1 x loopMomenta.size() - this is used in comparison, after that
@@ -883,7 +868,6 @@ void useQuadraticFormulaToIntegrateOverLoopMomenta(FeynmanParam &_feyn) {
 
 	if (A == zero) {
 		_feyn.setF(newDenom * detV);
-		//_feyn.setDenominator(GiNaC::pow(_feyn.getC(), alpha - l * d / 2));
 	} else {
 		// if A is nonzero
 
@@ -894,9 +878,6 @@ void useQuadraticFormulaToIntegrateOverLoopMomenta(FeynmanParam &_feyn) {
 		}
 
 		_feyn.setF(newDenom * detV);
-
-		//newDenom = GiNaC::pow(newDenom, alpha - l * d / 2);
-		//_feyn.setDenominator(newDenom);
 	}
 
 	return;
@@ -932,13 +913,7 @@ void factorTauOutsideIntoOverallFactor(FeynmanParam &_feyn) {
 	newOverallFactor2 *= GiNaC::pow(tau, -alpha + l * d / 2);
 	_feyn.setOverallFactor2(newOverallFactor2);
 
-	// c) update FeynmanParam attribute denominator
-
-	//GiNaC::ex newDenominator = _feyn.getDenominator();
-	//newDenominator = newDenominator.subs(tau == 1);
-	//_feyn.setDenominator(newDenominator);
-
-	// d) update F
+	// c) update F
 	GiNaC::ex newF = _feyn.getF();
 	newF = newF.subs(tau == 1);
 	_feyn.setF(newF);

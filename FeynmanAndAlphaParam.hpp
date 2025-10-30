@@ -49,10 +49,7 @@ protected:
 	// performing all the steps
 	GiNaC::ex overallNumFactor; // overall numerical factor
 	GiNaC::ex overallFactor2; // here gamma(2*eps) will be stored, also 4pi^{...eps} and factored tau^{...}
-	//GiNaC::ex numerator;
-	//GiNaC::ex denominator;
 
-	// new ones // TODO - make proper notes
 	GiNaC::ex numeratorFactor; // numerator in feynman param. -> paramters to respective powers ^(a_i-1)
 	GiNaC::ex U; // det(V)
 	GiNaC::ex F; // det(V) * (C - A_i*A_j*V^{-1}_ij)
@@ -64,8 +61,6 @@ public:
 	// constructors
 	FeynmanParam();
 	FeynmanParam(Diagram &_diag, std::vector<Vertex> &_timeOrdering);
-
-	//TODO - remaining getters and setters
 
 	// getters
 	Diagram getDiag() const;
@@ -171,8 +166,6 @@ void factorTauOutsideIntoOverallFactor(FeynmanParam &_feyn);
 //===========================================================================
 
 //===========================================================================
-// ALPHA PARAMETRIZATION - TODO
-
 //===========================================================================
 
 #endif /* FEYNMANANDALPHAPARAM_HPP_ */

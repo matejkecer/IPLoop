@@ -17,7 +17,6 @@
 // class Vertex
 class Vertex {
 	/* class vertex holds vertices (coded by name of vertex, e.g. "A").
-	 * TODO - implement type of propagator.
 	 * */
 
 protected:
@@ -65,7 +64,6 @@ public:
 class Propagator {
 	/* class propagator holds oriented causal propagators. Namely its startpoint,
 	 * endpoint, and momentum. Startpoint is always sooner in time (endpoint is later).
-	 * TODO - implement type of propagator.
 	 * */
 protected:
 	// attributes
@@ -89,7 +87,7 @@ public:
 	// getters
 	Vertex getStartVert() const;
 	Vertex getEndVert() const;
-	GiNaC::ex getMomentum() const; //TODO - will this do what i want it to do??
+	GiNaC::ex getMomentum() const;
 	std::string getPropType() const;
 
 	// setters
@@ -234,7 +232,6 @@ GiNaC::ex findFactorFromVertsAndProps(Diagram _diag);
 
 //===========================================================================
 // functions to make program compatible with previous code
-// TODO - DELETE
 // following are used in constructor of Diagram
 std::vector<Propagator> makeDiagramsPropagatorsFromStrings(
 		std::vector<std::string> _input);
@@ -296,15 +293,6 @@ Diagram setExtMomToZero(Diagram _inputDiag);
 //===========================================================================
 // Code for getting part proportional to tau
 std::vector<Diagram> addVertCorrespToTauDeriv(Diagram _parentDiag);
-//===========================================================================
-
-//===========================================================================
-// Code for getting part proportional to ext. momentum (p^2)
-std::vector<Diagram> addVertsCorrespToPDeriv(Diagram &_parentDiag);
-
-std::vector<Diagram> addVertType1(Diagram &_parentDiag);
-std::vector<Diagram> addVertsType2(Diagram &_parentDiag);
-std::vector<Diagram> addVertsType3_crossTerms(Diagram &_parentDiag);
 //===========================================================================
 
 #endif /* ELEMENTSANDINPUT_GINAC_HPP_ */
